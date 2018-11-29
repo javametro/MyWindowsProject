@@ -11,17 +11,47 @@ namespace UIAutomationTrigger
 {
     class Program
     {
+        #region InvokePattern helper
+        /// <summary>
+        /// Get InvokePattern
+        /// </summary>
+        /// <param name="element">AutomationElement instance</param>
+        /// <returns>InvokePattern instance</returns>
+        public static InvokePattern GetInvokePattern(AutomationElement element)
+        {
+            object currentPattern;
+            if (!element.TryGetCurrentPattern(InvokePattern.Pattern, out currentPattern))
+            {
+                throw new Exception(string.Format("Element with AutomationId '{0}' and Name '{1}' does not support the InvokePattern.",
+                    element.Current.AutomationId, element.Current.Name));
+            }
+            return currentPattern as InvokePattern;
+        }
+        #endregion
+
         static void Main(string[] args)
         {
-            Process p = Process.Start(@"C:\Windows\System32\calc.exe");
-            Thread.Sleep(2000);
+            int length = args.Length;
+            if(length != 2)
+            {
+                Console.WriteLine("******************************************************************");
+                Console.WriteLine("Usage: UIAutomationTrigger.exe arg1=ProgramName arg2=AutomationId");
+                Console.WriteLine("******************************************************************");
+                return;
+            }
 
-            AutomationElement desktop = AutomationElement.RootElement;
-            AutomationElement calcframe = desktop.FindFirst(TreeScope.Descendants | TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, "Calculator"));
-            AutomationElement sevenbtn = calcframe.FindFirst(TreeScope.Descendants | TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, "7"));
+            string appName = args[0];
+            string automationid = args[1];
+            Process[] process = Process.GetProcessesByName(appName);
+            int pid = 0;
+            foreach (Process processItem in process)
+            {
+                pid = processItem.Id;
+            }
 
-            InvokePattern ivkp = (InvokePattern)sevenbtn.GetCachedPattern(InvokePattern.Pattern);
-            ivkp.Invoke();
+            AutomationElement item = FindElement.FindElementById(pid, automationid);
+            InvokePattern currentPattern = GetInvokePattern(item);
+            currentPattern.Invoke();
         }
     }
 
@@ -81,28 +111,38 @@ namespace UIAutomationTrigger
             return aeToFind;
         }
 
-        public static AutomationElement GetMainWindow()
+        public static AutomationElement FindWindowByProcessId(int processId)
         {
-            AutomationElement dtop = AutomationElement.RootElement;
-            AutomationElement mainwnd = FindElement.FindElementByConditionInTimes(dtop, TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, "Notepad"), 5);
-            return mainwnd;
+            AutomationElement targetWindow = null;
+            int count = 0;
+            try
+            {
+                Process p = Process.GetProcessById(processId);
+                targetWindow = AutomationElement.FromHandle(p.MainWindowHandle);
+                return targetWindow;
+            }
+            catch (Exception ex)
+            {
+                count++;
+                StringBuilder sb = new StringBuilder();
+                string message = sb.AppendLine(string.Format("Target window is not existing.try #{0}", count)).ToString();
+                if (count > 5)
+                {
+                    throw new InvalidProgramException(message, ex);
+                }
+                else
+                {
+                    return FindWindowByProcessId(processId);
+                }
+            }
         }
 
-        public static AutomationElement GetMenuBtn(AutomationElement mainwnd)
+        public static AutomationElement FindElementById(int processId, string automationId)
         {
-            AutomationElement menubtn = FindElement.FindElementByConditionInTimes(mainwnd, TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, "Menu"), 5);
-            return menubtn;
+            AutomationElement aeForm = FindWindowByProcessId(processId);
+            AutomationElement tarFindElement = aeForm.FindFirst(TreeScope.Descendants,
+            new PropertyCondition(AutomationElement.AutomationIdProperty, automationId));
+            return tarFindElement;
         }
-
-        public static AutomationElement GetSaveWins(AutomationElement mainwnd)
-        {
-            var andcondition = new AndCondition(new PropertyCondition(AutomationElement.NameProperty, "Save"), new PropertyCondition(AutomationElement.ClassNameProperty, "Window"));
-            AutomationElement saveWins = FindElement.FindElementByAndConditionInTimes(mainwnd, TreeScope.Children, andcondition, 5);
-            return saveWins;
-        }
-
-
-
-
     }
 }
