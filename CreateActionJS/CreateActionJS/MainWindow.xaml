@@ -1,0 +1,79 @@
+﻿<Window x:Class="CreateActionJS.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CreateActionJS"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1000">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <TextBlock Margin="5" Grid.Row="0" Height="20">请选择需要创建测试用例的App：</TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Margin="5" Name="appsList" Width="400" SelectionChanged="appsList_SelectionChanged" SelectedIndex="0">
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Margin="5" GroupName="ItemType" Content="button" Name="button" IsChecked="True" Checked="button_Checked"/>
+                <RadioButton Margin="5" GroupName="ItemType" Content="edit" Name="edit" Checked="edit_Checked"/>
+                <RadioButton Margin="5" GroupName="ItemType" Content="other" Name="other" Checked="other_Checked"/>
+            </StackPanel>
+            
+            <TextBlock>Items</TextBlock>
+            <ListBox Height="400" x:Name="ItemList" SelectionChanged="button_listBoxSelectChanged" ItemsSource="{Binding Path=appsList.SelectedItem,Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            </ListBox>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Automation id:</TextBlock>
+                    <TextBlock Name="automation_id" Foreground="Red"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Process Name:</TextBlock>
+                    <TextBlock Name="ProcessName" Foreground="Red"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Process Id:</TextBlock>
+                    <TextBlock Name="ProcessId" Foreground="Red"></TextBlock>
+                </StackPanel>
+                
+            </StackPanel>
+            
+            <TextBlock>Supported Patterns:</TextBlock>
+            <ListBox Name="patternList" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            
+            </ListBox>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Margin="5" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked">Process Check</CheckBox>
+                <CheckBox Margin="5" Checked="CheckBox_Checked_1" Unchecked="CheckBox_Unchecked_1">File Exist Check</CheckBox>
+                <CheckBox Margin="5" Checked="CheckBox_Checked_2" Unchecked="CheckBox_Unchecked_2">Other Check</CheckBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Name="process_check_content" Visibility="Hidden">
+                <TextBlock Width="80" Margin="5">Check Process:</TextBlock>
+                <ComboBox Name="processlist" Width="200" Margin="5">
+                    <ComboBoxItem IsSelected="True">
+                        请下拉选择要测试的进程：
+                    </ComboBoxItem>
+                </ComboBox>
+                <Button Width="80" Margin="5" Click="OnClickShowTaskList">选择进程</Button>
+                <TextBlock Name="selected_process" Margin="5" Foreground="Red"></TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Name="file_exist_content" Visibility="Hidden">
+                <TextBlock Width="80" Margin="5">Check File:</TextBlock>
+                <TextBox Width="200" Margin="5" Name="FileName"></TextBox>
+                <Button Width="80" Margin="5" Click="Button_Click">Open File...</Button>
+            </StackPanel>
+            
+            <Button Margin="5" Name="create_testcase" Click="CreateCase" Width="100" HorizontalAlignment="Center" Content="Create testcase"></Button>
+        </StackPanel>
+    </Grid>
+</Window>
