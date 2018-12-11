@@ -37,6 +37,8 @@ namespace CreateActionJS
         private List<string>                patternNameList;
         private AutomationElement           root;
         private int itemType;
+        private ItemInfo itemInfo;
+        private ObservableCollection<ItemInfo> iteminfos;
 
 
         public enum ItemType
@@ -44,23 +46,22 @@ namespace CreateActionJS
             ButtonType,
             EditType
         }
-       
+
         public MainWindow()
         {
             InitializeComponent();
             this.itemType = 0;
-
             AppsList applist = new AppsList();
             ObservableCollection<string> infos = applist.datas;
             this.appsList.ItemsSource = infos;
-
+            
             //CurrentProcesses processList = new CurrentProcesses();
             //ObservableCollection<string> processSource = processList.appsMainProcess;
- 
+
             //DispatcherHelperEx.MainWindowDispatcher = Application.Current.MainWindow.Dispatcher;
             //DispatcherHelperEx.InvokeOnMainWindow(() => {
             //    btnNameList = new List<AutomationElement>();
-                
+
             //});
         }
 
@@ -70,20 +71,7 @@ namespace CreateActionJS
 
         private void button_listBoxSelectChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (ItemList.SelectedItem != null)
-            //{
-            //    this.itemName = ItemList.SelectedItem.ToString();
-            //    this.itemName = this.itemName.Split('-')[0].TrimEnd();
-            //    Thread thread = new Thread(() => GetCurrentPattern(this.appName, itemName));
-            //    thread.Start();
-            //}
-            //else {
-            //    return;
-            //}
-            Items items = new Items();
-            items.items = Items.GetButtons(this.appsList.SelectedItem.ToString(), this.itemType);
-            ObservableCollection<string> infos = (ObservableCollection<string>)items.items;
-            this.ItemList.ItemsSource = items.items;
+            
         }
 
         private void GetCurrentPattern(string appName, string itemName)
@@ -125,13 +113,11 @@ namespace CreateActionJS
             if (appName == null)
             {
                 MessageBox.Show("Can't find program");
-                //DispatcherHelperEx.InvokeOnMainWindow(() => { this.btn_getbuttonlist.IsEnabled = false; });
                 return;
             }
 
             DispatcherHelperEx.InvokeOnMainWindow(() =>
             {
-                //this.btn_getbuttonlist.IsEnabled = false;
                 this.ProcessId.Text = "";
                 this.ProcessName.Text = "";
                 this.automation_id.Text = "";
@@ -256,10 +242,11 @@ namespace CreateActionJS
 
         private void appsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //ItemInfo itemInfo = Items.GetButtons(this.appsList.SelectedItem.ToString(), this.itemType);
+
             Items items = new Items();
-            items.items = Items.GetButtons(this.appsList.SelectedItem.ToString(), this.itemType);
-            ObservableCollection<string> infos = (ObservableCollection<string>)items.items;
-            this.ItemList.ItemsSource = items.items;
+            iteminfos = Items.GetButtons(this.appsList.SelectedItem.ToString(), this.itemType);
+            this.ItemList.ItemsSource = iteminfos;
         }
 
         private void button_Checked(object sender, RoutedEventArgs e)
@@ -271,8 +258,8 @@ namespace CreateActionJS
                 return;
             }
             items.items = Items.GetButtons(this.appsList.SelectedItem.ToString(), this.itemType);
-            ObservableCollection<string> infos = (ObservableCollection<string>)items.items;
-            this.ItemList.ItemsSource = items.items;
+            ObservableCollection<ItemInfo> infos = (ObservableCollection<ItemInfo>)items.items;
+            this.ItemList.ItemsSource = infos;
         }
 
         private void edit_Checked(object sender, RoutedEventArgs e)
@@ -283,8 +270,8 @@ namespace CreateActionJS
             {
                 return;
             }
-            items.items = Items.GetButtons(this.appsList.SelectedItem.ToString(), this.itemType);
-            ObservableCollection<string> infos = (ObservableCollection<string>)items.items;
+            items.items = Items.GetEdit(this.appsList.SelectedItem.ToString(), this.itemType);
+            ObservableCollection<ItemInfo> infos = (ObservableCollection<ItemInfo>)items.items;
             this.ItemList.ItemsSource = items.items;
         }
 

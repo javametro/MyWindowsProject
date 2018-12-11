@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:CreateActionJS"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1000">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -15,7 +16,7 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
+
         <StackPanel Grid.Row="0" Grid.Column="0">
             <TextBlock Margin="5" Grid.Row="0" Height="20">请选择需要创建测试用例的App：</TextBlock>
             <StackPanel Orientation="Horizontal">
@@ -27,9 +28,18 @@
                 <RadioButton Margin="5" GroupName="ItemType" Content="edit" Name="edit" Checked="edit_Checked"/>
                 <RadioButton Margin="5" GroupName="ItemType" Content="other" Name="other" Checked="other_Checked"/>
             </StackPanel>
-            
+
             <TextBlock>Items</TextBlock>
-            <ListBox Height="400" x:Name="ItemList" SelectionChanged="button_listBoxSelectChanged" ItemsSource="{Binding Path=appsList.SelectedItem,Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <ListBox Height="400" Name="ItemList" SelectionChanged="button_listBoxSelectChanged" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="item_name_string" Text="{Binding Path=ItemName}" Width="150"></TextBlock>
+                            <TextBlock Name="item_automationid_string" Text="{Binding Path=AutomationId}" Width="100"></TextBlock>
+                            <TextBlock Name="item_helptext_string" Text="{Binding Path=HelpText}" Width="180"></TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
@@ -44,12 +54,12 @@
                     <TextBlock>Process Id:</TextBlock>
                     <TextBlock Name="ProcessId" Foreground="Red"></TextBlock>
                 </StackPanel>
-                
+
             </StackPanel>
-            
+
             <TextBlock>Supported Patterns:</TextBlock>
             <ListBox Name="patternList" ScrollViewer.VerticalScrollBarVisibility="Visible">
-            
+
             </ListBox>
             <StackPanel Orientation="Horizontal">
                 <CheckBox Margin="5" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked">Process Check</CheckBox>
@@ -72,7 +82,7 @@
                 <TextBox Width="200" Margin="5" Name="FileName"></TextBox>
                 <Button Width="80" Margin="5" Click="Button_Click">Open File...</Button>
             </StackPanel>
-            
+
             <Button Margin="5" Name="create_testcase" Click="CreateCase" Width="100" HorizontalAlignment="Center" Content="Create testcase"></Button>
         </StackPanel>
     </Grid>

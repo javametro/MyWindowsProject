@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Automation;
+using UIAutomationClient;
 using System.Collections.ObjectModel;
+using System.Windows.Automation;
 
 namespace CreateActionJS
 {
     class Items : ViewModelBase
     {
-        public ObservableCollection<string> items;
+        public ObservableCollection<ItemInfo> items;
 
-        public ObservableCollection<string> ItemGroup
+        public ObservableCollection<ItemInfo> ItemGroup
         {
             get
             {
@@ -34,45 +35,78 @@ namespace CreateActionJS
             
         }
 
-        public static ObservableCollection<string> GetButtons(string appName, int type)
+        public static ObservableCollection<ItemInfo> GetButtons(string appName, int type)
         {
+            ObservableCollection<ItemInfo> buttonList = new ObservableCollection<ItemInfo>();
             AutomationElement root = AutomationElement.RootElement;
             OrCondition or = new OrCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
                             new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Pane));
             PropertyCondition propertyCondition = new PropertyCondition(AutomationElement.NameProperty, appName);
             AndCondition andCondition = new AndCondition(or, propertyCondition);
-            AutomationElement theApp = root.FindFirst(TreeScope.Children, andCondition);
-
-            if (type == 0)
+            AutomationElementCollection theAppGroup = root.FindAll(System.Windows.Automation.TreeScope.Children, andCondition);
+            AutomationElement theApp = null;
+            foreach(AutomationElement item in theAppGroup)
             {
-                ObservableCollection<string> button_data = new ObservableCollection<string>();
-                PropertyCondition button_condition = new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button);
-                AutomationElementCollection btnNames = theApp.FindAll(TreeScope.Descendants, button_condition);
-
-                foreach (AutomationElement item in btnNames)
+                if (item.Current.Name.Equals(appName))
                 {
-                    button_data.Add(item.Current.AutomationId);
+                    theApp = item;
                 }
-
-                return button_data;
+            }
+            if(theApp == null)
+            {
+                return null;
             }
 
-            if(type == 1)
+            PropertyCondition button_condition = new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button);
+            AutomationElementCollection btnNames = theApp.FindAll(System.Windows.Automation.TreeScope.Descendants, button_condition);
+
+            
+            foreach (AutomationElement item in btnNames)
             {
-                ObservableCollection<string> edit_data = new ObservableCollection<string>();
-                PropertyCondition edit_condition = new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit);
-                AutomationElementCollection editLists = theApp.FindAll(TreeScope.Descendants, edit_condition);
+                ItemInfo itemInfo = new ItemInfo();
+                itemInfo.ItemName = item.Current.Name;
+                itemInfo.AutomationId = item.Current.AutomationId;
+                itemInfo.HelpText = item.Current.HelpText;
+                buttonList.Add(itemInfo);
+            }
+            return buttonList;
+        }
 
-                foreach (AutomationElement item in editLists)
+        public static ObservableCollection<ItemInfo> GetEdit(string appName, int type)
+        {
+            ObservableCollection<ItemInfo> editList = new ObservableCollection<ItemInfo>();
+            AutomationElement root = AutomationElement.RootElement;
+            OrCondition or = new OrCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
+                            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Pane));
+            PropertyCondition propertyCondition = new PropertyCondition(AutomationElement.NameProperty, appName);
+            AndCondition andCondition = new AndCondition(or, propertyCondition);
+            AutomationElementCollection theAppGroup = root.FindAll(System.Windows.Automation.TreeScope.Children, andCondition);
+            AutomationElement theApp = null;
+            foreach (AutomationElement item in theAppGroup)
+            {
+                if (item.Current.Name.Equals(appName))
                 {
-                    edit_data.Add(item.Current.AutomationId);
+                    theApp = item;
                 }
-
-                return edit_data;
+            }
+            if (theApp == null)
+            {
+                return null;
             }
 
-            return null;
+            PropertyCondition button_condition = new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit);
+            AutomationElementCollection btnNames = theApp.FindAll(System.Windows.Automation.TreeScope.Descendants, button_condition);
 
+
+            foreach (AutomationElement item in btnNames)
+            {
+                ItemInfo itemInfo = new ItemInfo();
+                itemInfo.ItemName = item.Current.Name;
+                itemInfo.AutomationId = item.Current.AutomationId;
+                itemInfo.HelpText = item.Current.HelpText;
+                editList.Add(itemInfo);
+            }
+            return editList;
         }
     }
 }
