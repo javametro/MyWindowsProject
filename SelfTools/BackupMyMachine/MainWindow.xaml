@@ -1,0 +1,39 @@
+﻿<Window x:Class="BackupMyMachine.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BackupMyMachine"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Margin="5">Backup below folders:</TextBlock>
+            <Button Name="add" Margin="5" Click="add_Click">Add folder</Button>
+        </StackPanel>
+
+        <ListBox Name="folder_list" Height="200">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Name="listitem" Text="{Binding Path=Folder_Name}"></TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock>Selection the drive you want to backup:</TextBlock>
+            <ListBox Name="usb_volumes" Margin="5" SelectionChanged="usb_volumes_SelectionChanged" SelectedIndex="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Volume}"></TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Name="select_usb_volume" Margin="5" Width="80"></Button>
+            <Button Name="submit" Width="80" Click="submit_Click" Margin="5">Start</Button>
+        </StackPanel>
+        <ProgressBar Name="filecopyprogress" Minimum="0" Maximum="100">
+            
+        </ProgressBar>
+        
+    </StackPanel>
+</Window>
